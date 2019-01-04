@@ -9,15 +9,16 @@ public class SafeTransfer implements ITransfer {
 
     @Override
     public void transferMoney(String fromAccount, String toAccount, String amount) throws Exception {
-        int from = System.identityHashCode(fromAccount);
-        int to = System.identityHashCode(toAccount);
-        if (from > to) {
+        // 根据对象在物理内存的地址值的大小顺序，进行加锁。
+        int fromHash = System.identityHashCode(fromAccount);
+        int toHash = System.identityHashCode(toAccount);
+        if (fromHash > toHash) {
             synchronized (fromAccount) {
                 synchronized (toAccount) {
                     System.out.println("transfer " + fromAccount + "to " + toAccount);
                 }
             }
-        } else if (from < to) {
+        } else if (fromHash < toHash) {
             synchronized (toAccount) {
                 synchronized (fromAccount) {
                     System.out.println("transfer " + fromAccount + "to " + toAccount);
